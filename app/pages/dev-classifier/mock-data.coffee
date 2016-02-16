@@ -38,6 +38,7 @@ workflow = apiClient.type('workflows').create
       question: 'Where shall we start?'
       help: 'You don’t need help with this.'
       answers: [
+        {label: 'Maybe select something', next: 'select'}
         {label: 'Crop the image', next: 'crop'}
         {label: 'Enter some text', next: 'write'}
         {label: 'Single-answer question', next: 'ask'}
@@ -45,6 +46,47 @@ workflow = apiClient.type('workflows').create
         {label: 'Draw stuff', next: 'draw'}
         {label: 'Survey the image', next: 'survey'}
         {label: 'We’re done here.', next: null}
+      ]
+
+    select:
+      type: 'select'
+      instruction: 'Select something cool, or not, then write it!'
+      help: '''
+        **Example**: If you see a bee, then SELECT OR TYPE "Bee"
+      '''
+      selects: [
+        {
+          title: "Countries"
+          options: [
+            { value: 'USA', label: 'United States of America' },
+            { value: 'Canada', label: 'Canada' },
+            { value: 'Mexico', label: 'Mexico' }
+          ]
+        },
+        {
+          title: "States"
+          condition: {
+            USA: [
+              { value: 'HI', label: 'Hawaii' },
+              { value: 'ID', label: 'Idaho' },
+              { value: 'IL', label: 'Illinois' }
+            ],
+            Canada: [
+              { value: 'Quebec', label: 'Quebec' },
+              { value: 'Ontario', label: 'Ontario' }
+            ]
+          }
+        },
+        {
+          title: "Counties"
+          condition: {
+            IL: [
+              { value: 'Cook', label: 'Cook' },
+              { value: 'Lake', label: 'Lake' },
+              { value: 'Will', label: 'Will' }
+            ]
+          }
+        }
       ]
 
     crop:
