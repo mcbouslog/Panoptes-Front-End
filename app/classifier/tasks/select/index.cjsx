@@ -20,7 +20,7 @@ module?.exports = React.createClass
     getDefaultTask: ->
       type: 'select'
       instruction: 'Select or type an option from the dropdown(s)'
-      help: 'Click on the dropdown and choose an option, or type a new option.'
+      help: ''
       selects: []
 
     getTaskText: (task) ->
@@ -30,8 +30,18 @@ module?.exports = React.createClass
       value: []
 
     isAnnotationComplete: (task, annotation) ->
-      selectsCompleted = annotation.value.filter (value) -> value >= 0
-      selectsCompleted.length is task.selects.length
+      # TODO build this
+      true
+
+  componentDidMount: ->
+    @props.annotation.value = @props.task.selects.map -> ''
+
+  getSelectOptions: (i) ->
+    if @props.task.selects[i].condition?
+      conditionParent = @props.annotation.value[i-1]
+      return @props.task.selects[i].condition[conditionParent]
+    else
+      options = @props.task.selects[i].options
 
   render: ->
     {selects} = @props.task
@@ -41,16 +51,16 @@ module?.exports = React.createClass
       <div>
 
         {selectIndexes.map (i) =>
-          options = selects[i].options
-          <div key="#{@props.task.instruction}-#{selects[i].title}">
+          options = @getSelectOptions(i)
+          <div key={i}>
             <div>{selects[i].title}</div>
             <Select
-              autoFocus={if i is "0" then "true"}
+              ref="selectRef-#{i}"
+              name="selectName-#{i}"
+              value={@props.annotation.value[i]}
               options={options}
-              clearable="true"
-              searchable="true"
-              ref="select-#{i}"
-              onChange={@onChangeSelect.bind(@, selectIndexes)}
+              onChange={@onChangeSelect.bind(@, i)}
+              allowCreate={true}
             />
           </div>
           }
@@ -58,11 +68,8 @@ module?.exports = React.createClass
       </div>
     </GenericTask>
 
-  onChangeSelect: (selects, e) ->
-    currentAnswers = selects.reduce((obj, i) =>
-      obj[i] = parseInt(@refs["select-#{i}"].value, 10)
-      obj
-    , [])
-
-    @props.annotation.value = currentAnswers
-    @props.onChange()
+  onChangeSelect: (i, newValue) ->
+    value = @props.annotation.value
+    value[i] = newValue
+    newAnnotation = Object.assign @props.annotation, {value}
+    @props.onChange newAnnotation

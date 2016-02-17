@@ -50,13 +50,13 @@ workflow = apiClient.type('workflows').create
 
     select:
       type: 'select'
-      instruction: 'Select something cool, or not, then write it!'
+      instruction: 'Select something cool, or if not - write it!'
       help: '''
         **Example**: If you see a bee, then SELECT OR TYPE "Bee"
       '''
       selects: [
         {
-          title: "Countries"
+          title: "Country"
           options: [
             { value: 'USA', label: 'United States of America' },
             { value: 'Canada', label: 'Canada' },
@@ -64,7 +64,7 @@ workflow = apiClient.type('workflows').create
           ]
         },
         {
-          title: "States"
+          title: "State/Province"
           condition: {
             USA: [
               { value: 'HI', label: 'Hawaii' },
@@ -78,7 +78,7 @@ workflow = apiClient.type('workflows').create
           }
         },
         {
-          title: "Counties"
+          title: "County"
           condition: {
             IL: [
               { value: 'Cook', label: 'Cook' },
