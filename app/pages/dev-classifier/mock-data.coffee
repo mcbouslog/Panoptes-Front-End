@@ -57,6 +57,7 @@ workflow = apiClient.type('workflows').create
       selects: [
         {
           title: "Country"
+          required: true
           options: [
             { value: 'USA', label: 'United States of America' },
             { value: 'Canada', label: 'Canada' },
@@ -65,7 +66,10 @@ workflow = apiClient.type('workflows').create
         },
         {
           title: "State/Province"
-          condition: {
+          allowCreate: true
+          condition: 0
+          disableUntilCondition: true
+          conditionalOptions: {
             USA: [
               { value: 'HI', label: 'Hawaii' },
               { value: 'ID', label: 'Idaho' },
@@ -79,11 +83,28 @@ workflow = apiClient.type('workflows').create
         },
         {
           title: "County"
-          condition: {
+          required: true
+          allowCreate: true
+          condition: 1
+          conditionalOptions: {
             IL: [
               { value: 'Cook', label: 'Cook' },
               { value: 'Lake', label: 'Lake' },
               { value: 'Will', label: 'Will' }
+            ]
+          }
+        },
+        {
+          title: "ZIP"
+          required: false
+          allowCreate: false
+          condition: 1
+          disableUntilCondition: true
+          conditionalOptions: {
+            IL: [
+              { value: '60640', label: '60640' },
+              { value: '60090', label: '60090' },
+              { value: '60605', label: '60605' }
             ]
           }
         }

@@ -30,18 +30,42 @@ module?.exports = React.createClass
       value: []
 
     isAnnotationComplete: (task, annotation) ->
-      # TODO build this
-      true
+      requiredSelects = Object.keys(task.selects).filter (i) -> task.selects[i].required
+
+      select = (i) ->
+        return i if annotation.value[i] isnt '' and annotation.value[i] isnt undefined
+      selectsCompleted = requiredSelects.map select
+
+      compareArrays = (requiredSelects, selectsCompleted) ->
+        areEqual = true
+        for i in [0..requiredSelects.length]
+          if requiredSelects[i] isnt selectsCompleted[i]
+            areEqual = false
+        return areEqual
+
+      (not requiredSelects.length) or compareArrays(requiredSelects, selectsCompleted)
+
+    testAnnotationQuality: (unknown, knownGood) ->
+      distance = levenshtein.get unknown.value.toLowerCase(), knownGood.value.toLowerCase()
+      length = Math.max unknown.value.length, knownGood.value.length
+      (length - distance) / length
 
   componentDidMount: ->
     @props.annotation.value = @props.task.selects.map -> ''
 
+  getConditionalAnswer: (i) ->
+    @props.annotation.value[@props.task.selects[i].condition]
+
   getSelectOptions: (i) ->
     if @props.task.selects[i].condition?
-      conditionParent = @props.annotation.value[i-1]
-      return @props.task.selects[i].condition[conditionParent]
-    else
-      options = @props.task.selects[i].options
+      return @props.task.selects[i].conditionalOptions[@getConditionalAnswer(i)]
+    options = @props.task.selects[i].options
+
+  getDisabledAttribute: (i) ->
+    if @props.task.selects[i].disableUntilCondition
+      if @getConditionalAnswer(i) is '' or @getConditionalAnswer(i) is undefined
+        return true
+    return false
 
   render: ->
     {selects} = @props.task
@@ -56,11 +80,12 @@ module?.exports = React.createClass
             <div>{selects[i].title}</div>
             <Select
               ref="selectRef-#{i}"
-              name="selectName-#{i}"
               value={@props.annotation.value[i]}
               options={options}
               onChange={@onChangeSelect.bind(@, i)}
-              allowCreate={true}
+              allowCreate={selects[i].allowCreate}
+              noResultsText={if not options?.length then null}
+              disabled={@getDisabledAttribute(i)}
             />
           </div>
           }
@@ -71,5 +96,12 @@ module?.exports = React.createClass
   onChangeSelect: (i, newValue) ->
     value = @props.annotation.value
     value[i] = newValue
+
+    if newValue is '' or newValue is undefined
+      newArray = Object.keys(@props.task.selects).filter (key) =>
+        @props.task.selects[key].condition is parseInt(i, 10)
+      for key in newArray
+        value[key] = ''
+
     newAnnotation = Object.assign @props.annotation, {value}
     @props.onChange newAnnotation
