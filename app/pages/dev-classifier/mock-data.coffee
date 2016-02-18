@@ -110,6 +110,68 @@ workflow = apiClient.type('workflows').create
         }
       ]
 
+    select2:
+      type: 'select'
+      instruction: 'Select something cool, or if not - write it!'
+      help: '''
+        **Example**: If you see a bee, then SELECT OR TYPE "Bee"
+      '''
+      selects: [
+        {
+          title: "Country"
+          required: true
+          options: [
+            'USA',
+            'Canada',
+            'Mexico'
+          ]
+        },
+        {
+          title: "State/Province"
+          allowCreate: true
+          condition: 0
+          disableUntilCondition: true
+          conditionalOptions: [
+            [
+              'Hawaii',
+              'Idaho',
+              'Illinois'
+            ],
+            [
+              'Quebec',
+              'Ontario'
+            ]
+          ]
+        },
+        {
+          title: "County"
+          required: true
+          allowCreate: true
+          condition: 1
+          conditionalOptions: {
+            Illinois: [
+              'Cook',
+              'Lake',
+              'Will'
+            ]
+          }
+        },
+        {
+          title: "ZIP"
+          required: false
+          allowCreate: false
+          condition: 1
+          disableUntilCondition: true
+          conditionalOptions: {
+            Illinois: [
+              '60640',
+              '60090',
+              '60605'
+            ]
+          }
+        }
+      ]
+
     crop:
       type: 'crop'
       instruction: 'Drag out a box around the smaller rhino.'

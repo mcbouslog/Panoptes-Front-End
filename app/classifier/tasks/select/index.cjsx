@@ -76,7 +76,7 @@ module?.exports = React.createClass
 
         {selectIndexes.map (i) =>
           options = @getSelectOptions(i)
-          <div key={i}>
+          <div key={Math.random()}>
             <div>{selects[i].title}</div>
             <Select
               ref="selectRef-#{i}"
@@ -97,11 +97,10 @@ module?.exports = React.createClass
     value = @props.annotation.value
     value[i] = newValue
 
-    if newValue is '' or newValue is undefined
-      newArray = Object.keys(@props.task.selects).filter (key) =>
-        @props.task.selects[key].condition is parseInt(i, 10)
-      for key in newArray
-        value[key] = ''
+    relatedSelects = Object.keys(@props.task.selects).filter (key) =>
+      @props.task.selects[key].condition is parseInt(i, 10)
+    for key in relatedSelects
+      @onChangeSelect(key, '')
 
     newAnnotation = Object.assign @props.annotation, {value}
     @props.onChange newAnnotation
