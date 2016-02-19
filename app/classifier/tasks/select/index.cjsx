@@ -50,34 +50,34 @@ module?.exports = React.createClass
       length = Math.max unknown.value.length, knownGood.value.length
       (length - distance) / length
 
+  getInitialState: ->
+    answerIndexes: []
+
   componentDidMount: ->
     @props.annotation.value = @props.task.selects.map -> ''
+    @setState answerIndexes: @props.task.selects.map -> undefined
 
   getConditionalAnswer: (i) ->
     @props.annotation.value[@props.task.selects[i].condition]
 
-  getFirstAnswerIndex: ->
-    index = @props.task.selects[0].options.indexOf(@props.annotation.value[0])
-    return index if index isnt -1
+  getParentCondAI: (condIndex) ->
+    {selects} = @props.task
+    if selects[condIndex].condition?
+      return @state.answerIndexes[selects[condIndex].condition]
+    'first'
 
-  getCondAnswerIndex: (i) ->
-    index = @props.task.selects[1].options[0][@getFirstAnswerIndex()]?.indexOf(@getConditionalAnswer(i))
-    return index if index isnt -1
+  getCondAI: (condIndex) ->
+    @state.answerIndexes[condIndex]
 
   getSelectOptions: (i) ->
     {selects} = @props.task
     select = selects[i]
-
-    if select.options.length?
+    if select.options.length
       options = select.options
-    else if select.condition is 0
-      options = select.options[0][@getFirstAnswerIndex()]
-    else if select.condition is 1
-      options = select.options[@getFirstAnswerIndex()]?[@getCondAnswerIndex(i)]
-    else if select.condition > 1
-      # TODO HELP!
+    else
+      options = select.options[@getParentCondAI(select.condition)]?[@getCondAI(select.condition)]
 
-    options?.map (option) -> {value: option}
+    options
 
   getDisabledAttribute: (i) ->
     if @props.task.selects[i].disableUntilCondition
@@ -99,7 +99,7 @@ module?.exports = React.createClass
             <Select
               ref="selectRef-#{i}"
               value={@props.annotation.value[i]}
-              options={options}
+              options={options?.map (option) -> {value: option}}
               onChange={@onChangeSelect.bind(@, i)}
               allowCreate={selects[i].allowCreate}
               noResultsText={if not options?.length then null}
@@ -120,6 +120,11 @@ module?.exports = React.createClass
       @props.task.selects[key].condition is parseInt(i, 10)
     for key in relatedSelects
       @onChangeSelect(key, '')
+
+    options = @getSelectOptions(i)
+    answerIndexes = @state.answerIndexes
+    answerIndexes[i] = options?.indexOf(newValue)
+    @setState answerIndexes: answerIndexes
 
     newAnnotation = Object.assign @props.annotation, {value}
     @props.onChange newAnnotation

@@ -128,7 +128,7 @@ workflow = apiClient.type('workflows').create
           condition: 0
           disableUntilCondition: true
           options: {
-            0: {
+            first: {
               0: ['Hawaii', 'Idaho', 'Illinois'],
               2: ['Durango','Hidalgo']
             }
@@ -151,29 +151,33 @@ workflow = apiClient.type('workflows').create
           }
         },
         {
-          title: "ZIP"
+          title: "Nicknames"
           required: false
           allowCreate: false
           condition: 1
           disableUntilCondition: true
           options: {
-            0: {2: ['60640', '60090', '60605']}
+            0: {
+              2: ['Illi', 'NOISE', 'IL']
+            }
+          }
+        },
+        {
+          title: "City"
+          allowCreate: false
+          condition: 2
+          options: {
+            2: {
+              0: ['Chicago', 'Wheeling']
+            }
           }
         },
         {
           title: "Street"
           allowCreate: false
-          condition: 2
-          options: {
-            1: {0: ['Hintz', 'Lakeside']}
-          }
-        },
-        {
-          title: "Number"
-          allowCreate: false
           condition: 4
           options: {
-            1: {1: ['663', '411']}
+            0: {1: ['Lakeside', 'Hintz']}
           }
         }
       ]
