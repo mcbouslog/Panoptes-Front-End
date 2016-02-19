@@ -38,7 +38,7 @@ workflow = apiClient.type('workflows').create
       question: 'Where shall we start?'
       help: 'You don’t need help with this.'
       answers: [
-        {label: 'Maybe select something', next: 'select'}
+        {label: 'Maybe select something', next: 'select2'}
         {label: 'Crop the image', next: 'crop'}
         {label: 'Enter some text', next: 'write'}
         {label: 'Single-answer question', next: 'ask'}
@@ -120,40 +120,34 @@ workflow = apiClient.type('workflows').create
         {
           title: "Country"
           required: true
-          options: [
-            'USA',
-            'Canada',
-            'Mexico'
-          ]
+          options: ['United States of America', 'Canada', 'Mexico']
         },
         {
           title: "State/Province"
           allowCreate: true
           condition: 0
           disableUntilCondition: true
-          conditionalOptions: [
-            [
-              'Hawaii',
-              'Idaho',
-              'Illinois'
-            ],
-            [
-              'Quebec',
-              'Ontario'
-            ]
-          ]
+          options: {
+            0: {
+              0: ['Hawaii', 'Idaho', 'Illinois'],
+              2: ['Durango','Hidalgo']
+            }
+          }
         },
         {
           title: "County"
           required: true
           allowCreate: true
           condition: 1
-          conditionalOptions: {
-            Illinois: [
-              'Cook',
-              'Lake',
-              'Will'
-            ]
+          options: {
+            0: {
+              0: ['Kalau', 'Maui']
+              2: ['Cook', 'Lake', 'Will'],
+            },
+            2: {
+              0: ['DurCount1', 'DurCount2'],
+              1: ['HidCount1', 'HidCount2', 'HidCount3']
+            }
           }
         },
         {
@@ -162,12 +156,24 @@ workflow = apiClient.type('workflows').create
           allowCreate: false
           condition: 1
           disableUntilCondition: true
-          conditionalOptions: {
-            Illinois: [
-              '60640',
-              '60090',
-              '60605'
-            ]
+          options: {
+            0: {2: ['60640', '60090', '60605']}
+          }
+        },
+        {
+          title: "Street"
+          allowCreate: false
+          condition: 2
+          options: {
+            1: {0: ['Hintz', 'Lakeside']}
+          }
+        },
+        {
+          title: "Number"
+          allowCreate: false
+          condition: 4
+          options: {
+            1: {1: ['663', '411']}
           }
         }
       ]

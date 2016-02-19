@@ -56,10 +56,28 @@ module?.exports = React.createClass
   getConditionalAnswer: (i) ->
     @props.annotation.value[@props.task.selects[i].condition]
 
+  getFirstAnswerIndex: ->
+    index = @props.task.selects[0].options.indexOf(@props.annotation.value[0])
+    return index if index isnt -1
+
+  getCondAnswerIndex: (i) ->
+    index = @props.task.selects[1].options[0][@getFirstAnswerIndex()]?.indexOf(@getConditionalAnswer(i))
+    return index if index isnt -1
+
   getSelectOptions: (i) ->
-    if @props.task.selects[i].condition?
-      return @props.task.selects[i].conditionalOptions[@getConditionalAnswer(i)]
-    options = @props.task.selects[i].options
+    {selects} = @props.task
+    select = selects[i]
+
+    if select.options.length?
+      options = select.options
+    else if select.condition is 0
+      options = select.options[0][@getFirstAnswerIndex()]
+    else if select.condition is 1
+      options = select.options[@getFirstAnswerIndex()]?[@getCondAnswerIndex(i)]
+    else if select.condition > 1
+      # TODO HELP!
+
+    options?.map (option) -> {value: option}
 
   getDisabledAttribute: (i) ->
     if @props.task.selects[i].disableUntilCondition
@@ -86,6 +104,7 @@ module?.exports = React.createClass
               allowCreate={selects[i].allowCreate}
               noResultsText={if not options?.length then null}
               disabled={@getDisabledAttribute(i)}
+              labelKey="value"
             />
           </div>
           }
