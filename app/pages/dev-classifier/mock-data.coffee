@@ -174,7 +174,7 @@ workflow = apiClient.type('workflows').create
         },
         {
           title: "Street"
-          allowCreate: false
+          allowCreate: true
           condition: 4
           options: {
             0: {1: ['Lakeside', 'Hintz']}

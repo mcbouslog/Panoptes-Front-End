@@ -6,9 +6,24 @@ Select = require 'react-select'
 Summary = React.createClass
   displayName: 'SelectSummary'
 
+  getDefaultProps: ->
+    task: {}
+    annotation: {}
+
   render: ->
-    <div><p>Cool stuff</p></div>
-  # TODO - ADD ALL THE STUFF!
+    {selects} = @props.task
+
+    <div className="classification-task-summary">
+      <div className="question">{@props.task.instruction}</div>
+      <div className="answers">
+        {if @props.annotation.value
+          Object.keys(selects).map (i) =>
+            <div key={i} className="answer">
+              <i className="fa fa-arrow-circle-o-right" /> {selects[i].title} - {@props.annotation?.value[i]}
+            </div>
+        }
+      </div>
+    </div>
 
 module?.exports = React.createClass
   displayName: 'SelectTask'
