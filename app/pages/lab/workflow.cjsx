@@ -98,7 +98,8 @@ EditWorkflowPage = React.createClass
                         when 'survey' then <i className="fa fa-binoculars fa-fw"></i>
                         when 'flexibleSurvey' then <i className="fa fa-binoculars fa-fw"></i>
                         when 'crop' then <i className="fa fa-crop fa-fw"></i>
-                        when 'text' then <i className="fa fa-file-text-o fa-fw"></i>}
+                        when 'text' then <i className="fa fa-file-text-o fa-fw"></i>
+                        when 'dropdown' then <i className="fa fa-list fa-fw"></i>}
                       {' '}
                       {tasks[definition.type].getTaskText definition}
                       {if key is @props.workflow.first_task
@@ -160,6 +161,14 @@ EditWorkflowPage = React.createClass
                         <small><strong>Crop</strong></small>
                       </button>
                     </AutoSave>}{' '}
+                  {if @canUseTask(@props.project, "dropdown")
+                      <AutoSave resource={@props.workflow}>
+                        <button type="submit" className="minor-button" onClick={@addNewTask.bind this, 'dropdown'} title="Dropdown tasks: the volunteer selects an option from a list. Conditional dropdowns can be created, and if a research team enables the feature, a volunteer can enter text if the answer they'd like to provide is not an option available.">
+                          <i className="fa fa-list fa-2x"></i>
+                          <br />
+                          <small><strong>Dropdown</strong></small>
+                        </button>
+                      </AutoSave>}{' '}
                 </TriggeredModalForm>
               </p>
 

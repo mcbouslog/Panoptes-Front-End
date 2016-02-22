@@ -1,10 +1,10 @@
 React = require 'react'
 GenericTask = require '../generic'
-SelectTaskEditor = require './editor'
+DropdownEditor = require './editor'
 Select = require 'react-select'
 
 Summary = React.createClass
-  displayName: 'SelectSummary'
+  displayName: 'DropdownSummary'
 
   getDefaultProps: ->
     task: {}
@@ -26,14 +26,14 @@ Summary = React.createClass
     </div>
 
 module?.exports = React.createClass
-  displayName: 'SelectTask'
+  displayName: 'DropdownTask'
 
   statics:
-    Editor: SelectTaskEditor
+    Editor: DropdownEditor
     Summary: Summary
 
     getDefaultTask: ->
-      type: 'select'
+      type: 'dropdown'
       instruction: 'Select or type an option from the dropdown(s)'
       help: ''
       selects: []
@@ -77,9 +77,11 @@ module?.exports = React.createClass
 
   getParentCondAI: (condIndex) ->
     {selects} = @props.task
+
     if selects[condIndex].condition?
       return @state.answerIndexes[selects[condIndex].condition]
-    'first'
+
+    return 0
 
   getCondAI: (condIndex) ->
     @state.answerIndexes[condIndex]
@@ -87,27 +89,25 @@ module?.exports = React.createClass
   getSelectOptions: (i) ->
     {selects} = @props.task
     select = selects[i]
-    if select.options.length
-      options = select.options
-    else
-      options = select.options[@getParentCondAI(select.condition)]?[@getCondAI(select.condition)]
 
-    options
+    if select.options.length
+      return options = select.options
+
+    return options = select.options[@getParentCondAI(select.condition)]?[@getCondAI(select.condition)]
 
   getDisabledAttribute: (i) ->
-    if @props.task.selects[i].disableUntilCondition
-      if @getConditionalAnswer(i) is '' or @getConditionalAnswer(i) is undefined
+    if @props.task.selects[i].disableUntilCondition and @getConditionalAnswer(i) is ''
         return true
     return false
 
   render: ->
     {selects} = @props.task
-    selectIndexes = Object.keys(selects)
+    selectKeys = Object.keys(selects)
 
     <GenericTask question={@props.task.instruction} help={@props.task.help} required={@props.task.required}>
       <div>
 
-        {selectIndexes.map (i) =>
+        {selectKeys.map (i) =>
           options = @getSelectOptions(i)
           <div key={Math.random()}>
             <div>{selects[i].title}</div>
@@ -115,11 +115,11 @@ module?.exports = React.createClass
               ref="selectRef-#{i}"
               value={@props.annotation.value[i]}
               options={options?.map (option) -> {value: option}}
+              labelKey="value"
               onChange={@onChangeSelect.bind(@, i)}
+              disabled={@getDisabledAttribute(i)}
               allowCreate={selects[i].allowCreate}
               noResultsText={if not options?.length then null}
-              disabled={@getDisabledAttribute(i)}
-              labelKey="value"
             />
           </div>
           }

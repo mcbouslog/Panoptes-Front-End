@@ -16,6 +16,7 @@ EXPERIMENTAL_FEATURES = [
   'tutorial'
   'field guide'
   'text'
+  'dropdown'
   'hide classification summaries'
 ]
 

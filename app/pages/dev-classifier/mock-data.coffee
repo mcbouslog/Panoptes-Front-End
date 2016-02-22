@@ -38,7 +38,7 @@ workflow = apiClient.type('workflows').create
       question: 'Where shall we start?'
       help: 'You don’t need help with this.'
       answers: [
-        {label: 'Maybe select something', next: 'select2'}
+        {label: 'Maybe select something', next: 'dropdown'}
         {label: 'Crop the image', next: 'crop'}
         {label: 'Enter some text', next: 'write'}
         {label: 'Single-answer question', next: 'ask'}
@@ -48,70 +48,8 @@ workflow = apiClient.type('workflows').create
         {label: 'We’re done here.', next: null}
       ]
 
-    select:
-      type: 'select'
-      instruction: 'Select something cool, or if not - write it!'
-      help: '''
-        **Example**: If you see a bee, then SELECT OR TYPE "Bee"
-      '''
-      selects: [
-        {
-          title: "Country"
-          required: true
-          options: [
-            { value: 'USA', label: 'United States of America' },
-            { value: 'Canada', label: 'Canada' },
-            { value: 'Mexico', label: 'Mexico' }
-          ]
-        },
-        {
-          title: "State/Province"
-          allowCreate: true
-          condition: 0
-          disableUntilCondition: true
-          conditionalOptions: {
-            USA: [
-              { value: 'HI', label: 'Hawaii' },
-              { value: 'ID', label: 'Idaho' },
-              { value: 'IL', label: 'Illinois' }
-            ],
-            Canada: [
-              { value: 'Quebec', label: 'Quebec' },
-              { value: 'Ontario', label: 'Ontario' }
-            ]
-          }
-        },
-        {
-          title: "County"
-          required: true
-          allowCreate: true
-          condition: 1
-          conditionalOptions: {
-            IL: [
-              { value: 'Cook', label: 'Cook' },
-              { value: 'Lake', label: 'Lake' },
-              { value: 'Will', label: 'Will' }
-            ]
-          }
-        },
-        {
-          title: "ZIP"
-          required: false
-          allowCreate: false
-          condition: 1
-          disableUntilCondition: true
-          conditionalOptions: {
-            IL: [
-              { value: '60640', label: '60640' },
-              { value: '60090', label: '60090' },
-              { value: '60605', label: '60605' }
-            ]
-          }
-        }
-      ]
-
-    select2:
-      type: 'select'
+    dropdown:
+      type: 'dropdown'
       instruction: 'Select something cool, or if not - write it!'
       help: '''
         **Example**: If you see a bee, then SELECT OR TYPE "Bee"
@@ -128,7 +66,7 @@ workflow = apiClient.type('workflows').create
           condition: 0
           disableUntilCondition: true
           options: {
-            first: {
+            0: {
               0: ['Hawaii', 'Idaho', 'Illinois'],
               2: ['Durango','Hidalgo']
             }
