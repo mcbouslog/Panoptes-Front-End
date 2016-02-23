@@ -15,6 +15,7 @@ module?.exports = React.createClass
 
   getInitialState: ->
     dropdown: ''
+    condition: ''
     importErrors: []
 
   getDefaultProps: ->
@@ -31,12 +32,15 @@ module?.exports = React.createClass
 
   addSelect: (i, select) ->
     if not select.title
-      return window.alert('Dropdowns must have a Title')
+      return window.alert('Dropdowns must have a Title.')
 
     selectTitles = @props.task.selects.map (select) -> select.title
 
     if selectTitles.indexOf(select.title) isnt -1
-      return window.alert('Dropdowns must have a unique Title')
+      return window.alert('Dropdowns must have a unique Title.')
+
+    if @props.task.selects.length > 0 and not select.condition
+      return window.alert('Any dropdown in addition to the original dropdown must be conditional on an existing dropdown. If you\'d like to have multiple independent dropdowns please use the Combo task.')
 
     @setState({dropdown: i})
     @props.task.selects[i] = select
@@ -59,19 +63,42 @@ module?.exports = React.createClass
     select = selects[@state.dropdown]
 
     if select.options.length?
-      console.log 'get select options...'
-      options = select.options
-      console.log options
-      return options
+      return options = select.options
+
+    return options = []
+
+  getConditionOptions: ->
+    # TODO build conditional dropdown options get
+
+    {selects} = @props.task
+    select = selects[selects[@state.dropdown].condition]
+    console.log select
+    if select.options.length?
+      return options = select.options
+
+    return options = []
 
   onClickAddSelect: (e) ->
-    @addSelect(@props.task.selects.length, {
-      title: @refs.selectTitle.value,
-      options: []
-    })
+    if @props.task.selects.length is 0
+      @addSelect(@props.task.selects.length, {
+        title: @refs.selectTitle.value,
+        options: []
+      })
+    else
+      @addSelect(@props.task.selects.length, {
+        title: @refs.selectTitle.value,
+        condition: @refs.selectCondition.value,
+        options: @buildOptionsBase(@props.task.selects.length, @refs.selectCondition.value)
+      })
+
     @updateTasks()
 
     @refs.selectTitle.value = ''
+    @refs.selectCondition.value = ''
+
+  buildOptionsBase: (i, conditionIndex) ->
+    if conditionIndex is "0"
+      return options = {0: {}}
 
   onClickAddSelectOption: (e) ->
     @addSelectOption(@state.dropdown, @refs.selectOption.value)
@@ -79,6 +106,10 @@ module?.exports = React.createClass
 
   onChangeDropdown: (e) ->
     @setState({dropdown: e.target.value})
+    @setState({condition: ''})
+
+  onChangeCondition: (e) ->
+    @setState({condition: e.target.value})
 
   onClickDeleteDropdown: (selectKey) ->
     if window.confirm('Are you sure that you would like to delete this dropdown?')
@@ -199,12 +230,25 @@ module?.exports = React.createClass
           <h2 className="form-label">Add a dropdown
           <TriggeredModalForm trigger={<i className="fa fa-question-circle"></i>}>
             <p><strong>Title</strong> is what will be displayed as the dropdown title</p>
+            <p><strong>Conditional</strong> is which dropdown the new dropdown will be conditional upon</p>
           </TriggeredModalForm></h2>
 
           <br/>
           <label>
             Title <input ref="selectTitle"></input>
           </label>
+          {if selects.length > 0
+            <div>
+              <span>Conditional </span>
+
+              <select key={@state.dropdown} ref="selectCondition">
+                <option value="">none selected</option>
+
+                {selectKeys.map (selectKey) =>
+                  <option key={selects[selectKey].title} value={selectKey}>{selects[selectKey].title}</option>}
+              </select>
+            </div>
+          }
           <br/>
           <button type="button" onClick={@onClickAddSelect}><i className="fa fa-plus" /> Add Dropdown</button>
         </section>
@@ -212,7 +256,10 @@ module?.exports = React.createClass
         <hr/>
 
         <section>
-          <h2 className="form-label">Edit dropdown options<TriggeredModalForm trigger={<i className="fa fa-question-circle"></i>}>
+          <h2 className="form-label">Edit a Dropdown<TriggeredModalForm trigger={<i className="fa fa-question-circle"></i>}>
+            <p><strong>Required</strong> is what ...</p>
+            <p><strong>Allow Create</strong> is what ...</p>
+            <p><strong>Disable Until Condition</strong> is what ...</p>
             <p><strong>Options</strong> are what will be displayed to users as options within the dropdown</p>
           </TriggeredModalForm></h2>
 
@@ -224,6 +271,19 @@ module?.exports = React.createClass
             {selectKeys.map (selectKey) =>
               <option key={selects[selectKey].title} value={selectKey}>{selects[selectKey].title}</option>}
           </select>
+
+          {if selects[@state.dropdown]?.condition
+            conditionalSelect = selects[selects[@state.dropdown].condition]
+            <div>
+              <span>Conditional On {conditionalSelect.title}, Option</span>
+              <select key={@state.condition} ref="condition" defaultValue={@state.condition} onChange={@onChangeCondition}>
+                <option value="" disabled>none selected</option>
+
+                {@getConditionOptions().map (option) =>
+                  <option key={option} value={option}>{option}</option>}
+              </select>
+            </div>
+          }
 
           {if @state.dropdown
             <div>

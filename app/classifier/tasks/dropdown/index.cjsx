@@ -90,7 +90,7 @@ module?.exports = React.createClass
     {selects} = @props.task
     select = selects[i]
 
-    if select.options.length
+    if select.options.length?
       return options = select.options
 
     return options = select.options[@getParentCondAI(select.condition)]?[@getCondAI(select.condition)]
