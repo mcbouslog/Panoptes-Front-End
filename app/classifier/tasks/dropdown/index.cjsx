@@ -83,9 +83,6 @@ module?.exports = React.createClass
 
     return 0
 
-  getCondAI: (condIndex) ->
-    @state.answerIndexes[condIndex]
-
   getSelectOptions: (i) ->
     {selects} = @props.task
     select = selects[i]
@@ -93,7 +90,7 @@ module?.exports = React.createClass
     if select.options.length?
       return options = select.options
 
-    return options = select.options[@getParentCondAI(select.condition)]?[@getCondAI(select.condition)]
+    return options = select.options[@getParentCondAI(select.condition)]?[@state.answerIndexes[select.condition]]
 
   getDisabledAttribute: (i) ->
     if @props.task.selects[i].disableUntilCondition and @getConditionalAnswer(i) is ''
