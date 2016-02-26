@@ -34,7 +34,7 @@ module?.exports = React.createClass
 
     getDefaultTask: ->
       type: 'dropdown'
-      instruction: 'Select or type an option from the dropdown(s)'
+      instruction: 'Select or type an option'
       help: ''
       selects: []
 
