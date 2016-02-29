@@ -18,7 +18,7 @@ module?.exports = React.createClass
 
   getInitialState: ->
     dropdown: ''
-    conditionalAnswers: []
+    answerIndexes: if @props.task.selects.length? then @props.task.selects.map -> "" else []
     importErrors: []
 
   getDefaultProps: ->
@@ -46,8 +46,9 @@ module?.exports = React.createClass
       return window.alert('Any dropdown in addition to the original dropdown must be conditional on an existing dropdown. If you\'d like to have multiple independent dropdowns please use the Combo task.')
 
     @setState({dropdown: "#{i}"})
-    conditionalAnswers = @state.conditionalAnswers.push("")
-    @setState({conditionalAnswers: conditionalAnswers})
+    answerIndexes = @state.answerIndexes
+    answerIndexes[i] = ""
+    @setState({answerIndexes: answerIndexes})
     @props.task.selects[i] = select
     @updateTasks()
 
@@ -62,38 +63,35 @@ module?.exports = React.createClass
       return window.alert('Please select an answer to the related conditional dropdown to associate the new dropdown option to')
 
     if i is "0"
-      @props.task.selects[i].options?.push(option)
+      @props.task.selects[i].options.push(option)
     else
       {selects} = @props.task
       select = selects[i]
-      parentAI = @getParentCondAI(select.condition)
-      conditionalAI = @state.conditionalAnswers[select.condition]
-      if select.options[parentAI]?[conditionalAI]?.length?
-        select.options[parentAI][conditionalAI].push(option)
+      condParentAnswer = @getCondParentAnswer(i)
+      condAnswer = @state.answerIndexes[select.condition]
+      if select.options[condParentAnswer]?[condAnswer]?.length?
+        select.options[condParentAnswer][condAnswer].push(option)
       else
-        select.options["#{parentAI}"] = {}
-        select.options["#{parentAI}"][conditionalAI] = [option]
+        select.options["#{condParentAnswer}"] = {"#{condAnswer}": [option]}
 
     @updateTasks()
-
-  getParentCondAI: (condIndex) ->
-    {selects} = @props.task
-
-    if selects[condIndex].condition?
-      return @state.conditionalAnswers[selects[condIndex].condition]
-
-    return 0
 
   getOptions: (i) ->
     {selects} = @props.task
     select = selects[i]
 
-    if select?.options.length?
+    if select.options.length?
       return select.options
-    else if select?.condition
-      return select.options[@getParentCondAI(select.condition)]?[@state.conditionalAnswers[select.condition]] or []
+    else if select.condition
+      return select.options[@getCondParentAnswer(i)]?[@state.answerIndexes[select.condition]] or []
 
-    return []
+  getCondParentAnswer: (i) ->
+    {selects} = @props.task
+
+    if selects[selects[i].condition].condition?
+      return @state.answerIndexes[selects[selects[i].condition].condition]
+
+    return 0
 
   onClickAddSelect: (e) ->
     if @props.task.selects.length is 0
@@ -110,7 +108,6 @@ module?.exports = React.createClass
       @refs.selectCondition.value = ''
 
     @updateTasks()
-
     @refs.selectTitle.value = ''
 
   buildOptionsBase: (i, conditionIndex) ->
@@ -124,13 +121,13 @@ module?.exports = React.createClass
 
   onChangeDropdown: (e) ->
     @setState({dropdown: e.target.value})
-    conditionalAnswers = @props.task.selects.map (i) -> ""
-    @setState({conditionalAnswers: conditionalAnswers})
+    answerIndexes = @props.task.selects.map (i) -> ""
+    @setState({answerIndexes: answerIndexes})
 
   onChangeConditionAnswer: (i, e) ->
-    conditionalAnswers = @state.conditionalAnswers
-    conditionalAnswers[i] = e.target.value
-    @setState({conditionalAnswers: conditionalAnswers})
+    answerIndexes = @state.answerIndexes
+    answerIndexes[i] = e.target.value
+    @setState({answerIndexes: answerIndexes})
 
   editTask: ->
     select = @props.task.selects[@state.dropdown]
@@ -140,12 +137,14 @@ module?.exports = React.createClass
     @updateTasks()
 
   onClickAddPreset: ->
+    # TODO REFACTOR
     if @refs.preset.value is 'countries'
       for name in Countries
         @addSelectOption @state.dropdown, name
     if @refs.preset.value is 'months'
       for name in Months
         @addSelectOption @state.dropdown, name
+    @refs.preset.value = ""
 
   onClickDeleteDropdown: (selectKey) ->
     if window.confirm('Are you sure that you would like to delete this dropdown?')
@@ -277,7 +276,7 @@ module?.exports = React.createClass
             <div>
               <span>Conditional </span>
 
-              <select key={@state.dropdown} ref="selectCondition">
+              <select key={"selectCondition-#{@state.dropdown}"} ref="selectCondition">
                 <option value="">none selected</option>
 
                 {selectKeys.map (selectKey) =>
@@ -301,53 +300,29 @@ module?.exports = React.createClass
 
           <span>Dropdown </span>
 
-          <select key={@state.dropdown} ref="dropdown" defaultValue={@state.dropdown} onChange={@onChangeDropdown}>
+          <select key={"edit-#{@state.dropdown}"} ref="dropdown" defaultValue={@state.dropdown} onChange={@onChangeDropdown}>
             <option value="" disabled>none selected</option>
             {selectKeys.map (selectKey) =>
               <option key={selects[selectKey].title} value={selectKey}>{selects[selectKey].title}</option>}
           </select>
 
-          {if selects[@state.dropdown]?.condition
-
-            condition = selects[@state.dropdown]?.condition
-            conditions = []
-
-            while condition?
-              conditions.push(condition)
-              condition = selects[condition]?.condition
-
-            conditions.reverse()
-
-            conditions.map (condition) =>
-              conditionalSelect = selects[condition]
-              <div key={"#{@state.dropdown}-#{condition}"}>
-                <span>Conditional On {conditionalSelect.title}, option </span>
-                <select ref="conditionalAnswer#{condition}" defaultValue="" onChange={@onChangeConditionAnswer.bind(@, condition)}>
-                  <option value="">none selected</option>
-
-                  {@getOptions(condition).map (option, index) =>
-                    <option key={option} value={index}>{option}</option>}
-                </select>
-              </div>
-          }
-
           {if @state.dropdown
-            <div>
+            <div key={@state.dropdown}>
               <br/>
               <h2 className="form-label">Properties</h2>
               <label className="pill-button">
-                Required <input type="checkbox" ref="required" onChange={@editTask}></input>
+                Required <input type="checkbox" ref="required" defaultChecked={selects[@state.dropdown].required} onChange={@editTask}></input>
               </label>
               <br/>
               <label className="pill-button">
-                Allow Create <input type="checkbox" ref="allowCreate" onChange={@editTask}></input>
+                Allow Create <input type="checkbox" ref="allowCreate" defaultChecked={selects[@state.dropdown].allowCreate} onChange={@editTask}></input>
               </label>
               <br/>
 
               {if @state.dropdown isnt "0"
                 <div>
                   <label className="pill-button">
-                  Disable Until Condition <input type="checkbox" ref="disableUntilCondition" onChange={@editTask}></input>
+                  Disable Until Condition <input type="checkbox" ref="disableUntilCondition" defaultChecked={selects[@state.dropdown].disableUntilCondition} onChange={@editTask}></input>
                   </label>
                   <br/>
                 </div>
@@ -355,6 +330,28 @@ module?.exports = React.createClass
 
               <br/>
               <h2 className="form-label">Options</h2>
+
+              {if selects[@state.dropdown]?.condition
+
+                condition = selects[@state.dropdown].condition
+                conditions = []
+                while condition?
+                  conditions.push(condition)
+                  condition = selects[condition].condition
+                conditions.reverse()
+
+                conditions.map (condition) =>
+                  conditionalSelect = selects[condition]
+                  <div key={Math.random()}>
+                    <span>Conditional On {conditionalSelect.title}, option </span>
+                    <select ref="conditionalAnswer" defaultValue={@state.answerIndexes[condition]} onChange={@onChangeConditionAnswer.bind(@, condition)}>
+                      <option value="">none selected</option>
+                      {@getOptions(condition).map (option, index) =>
+                        <option key={option} value={index}>{option}</option>}
+                    </select>
+                  </div>
+              }
+
               <ul>
                 {@getOptions(@state.dropdown).map (option) =>
                   <li key={option}>
@@ -370,7 +367,6 @@ module?.exports = React.createClass
                 <label>
                   Option <input ref="selectOption"></input>
                 </label>{' '}
-
               </div>
 
               <button type="button" onClick={@onClickAddSelectOption}><i className="fa fa-plus" /> Add Dropdown Option</button>

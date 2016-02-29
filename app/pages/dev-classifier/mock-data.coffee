@@ -50,9 +50,9 @@ workflow = apiClient.type('workflows').create
 
     dropdown:
       type: 'dropdown'
-      instruction: 'Select something cool, or if not - write it!'
+      instruction: "Select something, or if it's not an option - write it!"
       help: '''
-        **Example**: If you see a bee, then SELECT OR TYPE "Bee"
+        **Example**: If you see a bee, then SELECT or TYPE "Bee"
       '''
       selects: [
         {
@@ -62,6 +62,7 @@ workflow = apiClient.type('workflows').create
         },
         {
           title: "State/Province"
+          required: true
           allowCreate: true
           condition: 0
           disableUntilCondition: true
@@ -74,7 +75,6 @@ workflow = apiClient.type('workflows').create
         },
         {
           title: "County"
-          required: true
           allowCreate: true
           condition: 1
           options: {

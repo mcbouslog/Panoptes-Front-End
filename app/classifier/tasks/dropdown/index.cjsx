@@ -72,28 +72,27 @@ module?.exports = React.createClass
     @props.annotation.value = @props.task.selects.map -> ''
     @setState answerIndexes: @props.task.selects.map -> undefined
 
-  getConditionalAnswer: (i) ->
-    @props.annotation.value[@props.task.selects[i].condition]
-
-  getParentCondAI: (condIndex) ->
-    {selects} = @props.task
-
-    if selects[condIndex].condition?
-      return @state.answerIndexes[selects[condIndex].condition]
-
-    return 0
-
-  getSelectOptions: (i) ->
+  getOptions: (i) ->
     {selects} = @props.task
     select = selects[i]
 
     if select.options.length?
-      return options = select.options
+      return select.options
 
-    return options = select.options[@getParentCondAI(select.condition)]?[@state.answerIndexes[select.condition]]
+    return select.options[@getCondParentAnswer(i)]?[@state.answerIndexes[select.condition]]
+
+  getCondParentAnswer: (i) ->
+    {selects} = @props.task
+
+    if selects[selects[i].condition].condition?
+      return @state.answerIndexes[selects[selects[i].condition].condition]
+
+    return 0
 
   getDisabledAttribute: (i) ->
-    if @props.task.selects[i].disableUntilCondition and @getConditionalAnswer(i) is ''
+    {selects} = @props.task
+
+    if selects[i].disableUntilCondition and @props.annotation.value[selects[i].condition] is ''
         return true
     return false
 
@@ -105,7 +104,7 @@ module?.exports = React.createClass
       <div>
 
         {selectKeys.map (i) =>
-          options = @getSelectOptions(i)
+          options = @getOptions(i)
           <div key={Math.random()}>
             <div>{selects[i].title}</div>
             <Select
@@ -117,6 +116,7 @@ module?.exports = React.createClass
               disabled={@getDisabledAttribute(i)}
               allowCreate={selects[i].allowCreate}
               noResultsText={if not options?.length then null}
+              addLabelText="Press enter for {label}..."
             />
           </div>
           }
@@ -133,7 +133,7 @@ module?.exports = React.createClass
     for key in relatedSelects
       @onChangeSelect(key, '')
 
-    options = @getSelectOptions(i)
+    options = @getOptions(i)
     answerIndexes = @state.answerIndexes
     answerIndexes[i] = options?.indexOf(newValue)
     @setState answerIndexes: answerIndexes
