@@ -59,8 +59,8 @@ module?.exports = React.createClass
     if @getOptions(i).indexOf(option) isnt -1
       return window.alert('Options must be unique to each dropdown')
 
-    if i isnt "0" and @state.condition is ""
-      return window.alert('Please select an answer to the related conditional dropdown to associate the new dropdown option to')
+    if i isnt "0" and @state.answerIndexes[@props.task.selects[i].condition] is ""
+      return window.alert('Please select an answer to the related conditional dropdown(s) to associate the new option(s) to')
 
     if i is "0"
       @props.task.selects[i].options.push(option)
@@ -138,12 +138,16 @@ module?.exports = React.createClass
 
   onClickAddPreset: ->
     # TODO REFACTOR
+    if @state.dropdown isnt "0" and @state.answerIndexes[@props.task.selects[@state.dropdown].condition] is ""
+      return window.alert('Please select an answer to the related conditional dropdown(s) to associate the new option(s) to')
+
     if @refs.preset.value is 'countries'
       for name in Countries
         @addSelectOption @state.dropdown, name
     if @refs.preset.value is 'months'
       for name in Months
         @addSelectOption @state.dropdown, name
+
     @refs.preset.value = ""
 
   onClickDeleteDropdown: (selectKey) ->

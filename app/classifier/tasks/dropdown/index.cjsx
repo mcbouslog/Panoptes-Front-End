@@ -129,7 +129,9 @@ module?.exports = React.createClass
     value[i] = newValue
 
     relatedSelects = Object.keys(@props.task.selects).filter (key) =>
-      @props.task.selects[key].condition is parseInt(i, 10)
+      condition = @props.task.selects[key].condition
+      # parseInt needed for Dev Classifier, not sure why
+      condition is i or condition is parseInt(i, 10)
     for key in relatedSelects
       @onChangeSelect(key, '')
 
