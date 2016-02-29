@@ -59,8 +59,7 @@ workflow = apiClient.type('workflows').create
           title: "Country"
           required: true
           options: ['United States of America', 'Canada', 'Mexico']
-        }
-        ,
+        },
         {
           title: "State/Province"
           allowCreate: true

@@ -10,6 +10,9 @@ PromiseRenderer = require '../../../components/promise-renderer'
 MarkdownHelp = require '../../../partials/markdown-help'
 Papa = require 'papaparse'
 
+{Countries} = require './countries'
+{Months} = require './months'
+
 module?.exports = React.createClass
   displayName: 'DropdownEditor'
 
@@ -65,10 +68,11 @@ module?.exports = React.createClass
       select = selects[i]
       parentAI = @getParentCondAI(select.condition)
       conditionalAI = @state.conditionalAnswers[select.condition]
-      if select.options[parentAI]?[conditionalAI].length?
+      if select.options[parentAI]?[conditionalAI]?.length?
         select.options[parentAI][conditionalAI].push(option)
-      select.options["#{parentAI}"] = {}
-      select.options["#{parentAI}"][conditionalAI] = [option]
+      else
+        select.options["#{parentAI}"] = {}
+        select.options["#{parentAI}"][conditionalAI] = [option]
 
     @updateTasks()
 
@@ -121,13 +125,27 @@ module?.exports = React.createClass
   onChangeDropdown: (e) ->
     @setState({dropdown: e.target.value})
     conditionalAnswers = @props.task.selects.map (i) -> ""
-    console.log conditionalAnswers
     @setState({conditionalAnswers: conditionalAnswers})
 
   onChangeConditionAnswer: (i, e) ->
     conditionalAnswers = @state.conditionalAnswers
     conditionalAnswers[i] = e.target.value
     @setState({conditionalAnswers: conditionalAnswers})
+
+  editTask: ->
+    select = @props.task.selects[@state.dropdown]
+    select['required'] = @refs.required.checked
+    select['allowCreate'] = @refs.allowCreate.checked
+    select['disableUntilCondition'] = @refs.disableUntilCondition?.checked
+    @updateTasks()
+
+  onClickAddPreset: ->
+    if @refs.preset.value is 'countries'
+      for name in Countries
+        @addSelectOption @state.dropdown, name
+    if @refs.preset.value is 'months'
+      for name in Months
+        @addSelectOption @state.dropdown, name
 
   onClickDeleteDropdown: (selectKey) ->
     if window.confirm('Are you sure that you would like to delete this dropdown?')
@@ -315,6 +333,28 @@ module?.exports = React.createClass
 
           {if @state.dropdown
             <div>
+              <br/>
+              <h2 className="form-label">Properties</h2>
+              <label className="pill-button">
+                Required <input type="checkbox" ref="required" onChange={@editTask}></input>
+              </label>
+              <br/>
+              <label className="pill-button">
+                Allow Create <input type="checkbox" ref="allowCreate" onChange={@editTask}></input>
+              </label>
+              <br/>
+
+              {if @state.dropdown isnt "0"
+                <div>
+                  <label className="pill-button">
+                  Disable Until Condition <input type="checkbox" ref="disableUntilCondition" onChange={@editTask}></input>
+                  </label>
+                  <br/>
+                </div>
+              }
+
+              <br/>
+              <h2 className="form-label">Options</h2>
               <ul>
                 {@getOptions(@state.dropdown).map (option) =>
                   <li key={option}>
@@ -334,6 +374,18 @@ module?.exports = React.createClass
               </div>
 
               <button type="button" onClick={@onClickAddSelectOption}><i className="fa fa-plus" /> Add Dropdown Option</button>
+
+              <br/>
+              <br/>
+
+              <span>Preset Options </span>
+
+              <select ref="preset" defaultValue="">
+                <option value="">none selected</option>
+                <option value="countries">Countries</option>
+                <option value="months">Months</option>
+              </select>
+              <button type="button" onClick={@onClickAddPreset}><i className="fa fa-plus" /> Add Preset Options</button>
 
               <br/>
 
