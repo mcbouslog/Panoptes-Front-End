@@ -59,17 +59,12 @@ module.exports = React.createClass
     onChange: NOOP
 
   render: ->
-    # <label className="answer">
-    # </label>
-
-    # <textarea className="standard-input full" rows="5" ref="textInput" value={@props.annotation.value} onChange={@handleChange}/>
-
-    # <input type="text" name={@props.task.instruction} defaultValue={@props.annotation.value} onChange={@handleChange} onBlur={@triggerSubmit}/>
-
     <GenericTask question={@props.task.instruction} help={@props.task.help} required={@props.task.required}>
       <form onSubmit={@handleSubmit}>
-        <input type="text" name={@props.task.instruction} defaultValue={@props.annotation.value} onChange={@handleChange} onBlur={@triggerSubmit}/>
-        <input ref="textSubmit" type="submit" className="hidden-submit"/>
+        <label className="answer">
+          <input type="text" name="#{window.location.pathname}-#{@props.task.instruction}" defaultValue={@props.annotation.value} onChange={@handleChange} onBlur={@triggerSubmit}/>
+          <input ref="textSubmit" type="submit" className="hidden-submit"/>
+        </label>
       </form>
     </GenericTask>
 
