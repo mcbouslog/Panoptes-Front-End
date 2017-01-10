@@ -64,6 +64,9 @@ EditProjectPage = React.createClass
           <li><Link to={@labPath('/about')} activeClassName='active' className="nav-list-item" title="Enter content for Research, Results, FAQ and Education.">
             About
           </Link></li>
+          <li><Link to={@labPath('/pages')} activeClassName='active' className="nav-list-item" title="Add new stuff!">
+            Pages
+          </Link></li>
           <li><Link to={@labPath('/collaborators')} activeClassName='active' className="nav-list-item" title="Add people to your team and specify what their roles are so that they have the right access to the tools they need (including access to the project while it’s private).">
             Collaborators
           </Link></li>
