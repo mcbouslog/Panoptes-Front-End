@@ -114,6 +114,10 @@ class OrganizationPage extends React.Component {
     this.setState({ readMore: !this.state.readMore });
   }
 
+  handleCategoryChange(category) {
+    this.props.onChangeQuery(category);
+  }
+
   render() {
     const [aboutPage] = this.props.organizationPages.filter(page => page.url_key === 'about');
     let rearrangedLinks = [];
@@ -161,6 +165,17 @@ class OrganizationPage extends React.Component {
               />
               <Translate content="organization.home.viewToggle" />
             </label>}
+          {this.props.organization.categories &&
+            <div className="organization-page__categories">
+              {this.props.organization.categories.map(category =>
+                <button
+                  key={category}
+                  className="button"
+                  onClick={this.handleCategoryChange.bind(this, category)}
+                >
+                  {category}
+                </button>)}
+            </div>}
           <OrganizationProjectCards
             errorFetchingProjects={this.props.errorFetchingProjects}
             fetchingProjects={this.props.fetchingProjects}
@@ -258,6 +273,7 @@ OrganizationPage.defaultProps = {
   collaboratorView: true,
   errorFetchingProjects: {},
   fetchingProjects: false,
+  onChangeQuery: () => {},
   organization: {},
   organizationAvatar: {},
   organizationBackground: {},
@@ -273,7 +289,11 @@ OrganizationPage.propTypes = {
     message: React.PropTypes.string
   }),
   fetchingProjects: React.PropTypes.bool,
+  onChangeQuery: React.PropTypes.func,
   organization: React.PropTypes.shape({
+    categories: React.PropTypes.arrayOf(
+      React.PropTypes.string
+    ),
     description: React.PropTypes.string,
     display_name: React.PropTypes.string,
     id: React.PropTypes.string,
