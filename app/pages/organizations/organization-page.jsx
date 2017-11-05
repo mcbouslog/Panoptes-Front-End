@@ -50,6 +50,57 @@ OrganizationProjectCards.propTypes = {
   )
 };
 
+export const OrganizationMetaData = ({ displayName, projects }) => {
+  function extractStat(statName) {
+    return projects.reduce((accum, project) => accum + project[statName], 0);
+  }
+
+  return (
+    <div className="organization-page__container">
+      <div className="project-metadata">
+        <span className="organization-details__heading">
+          {displayName}{' '}<Translate content="project.home.metadata.statistics" />
+        </span>
+        <div className="project-metadata-stats">
+          <div className="project-metadata-stat">
+            <div className="project-metadata-stat__value">{projects.length.toLocaleString()}</div>
+            <div className="project-metadata-stat__label">
+              <Translate content="organization.home.metadata.projects" />
+            </div>
+          </div>
+          <div className="project-metadata-stat">
+            <div className="project-metadata-stat__value">{123}</div>
+            <div className="project-metadata-stat__label">
+              <Translate content="project.home.metadata.subjects" />
+            </div>
+          </div>
+          <div className="project-metadata-stat">
+            <div className="project-metadata-stat__value">{extractStat('classifications_count').toLocaleString()}</div>
+            <div className="project-metadata-stat__label">
+              <Translate content="project.home.metadata.classifications" />
+            </div>
+          </div>
+          <div className="project-metadata-stat">
+            <div className="project-metadata-stat__value">{789}</div>
+            <div className="project-metadata-stat__label">
+              <Translate content="project.home.metadata.completedSubjects" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>);
+};
+
+OrganizationMetaData.propTypes = {
+  displayName: React.PropTypes.string,
+  projects: React.PropTypes.arrayOf(
+    React.PropTypes.shape({
+      id: React.PropTypes.string,
+      display_name: React.PropTypes.string
+    })
+  )
+};
+
 class OrganizationPage extends React.Component {
   constructor() {
     super();
@@ -143,33 +194,10 @@ class OrganizationPage extends React.Component {
             </div>
           </div>
 
-          <div className="organization-page__container">
-            <div className="project-metadata">
-              <span className="organization-details__heading">
-                {this.props.organization.display_name}{' '}<Translate content="project.home.metadata.statistics" />
-              </span>
-              <div className="project-metadata-stats">
-                <div className="project-metadata-stat">
-                  <div className="project-metadata-stat__value">{123}</div>
-                  <div className="project-metadata-stat__label">
-                    <Translate content="project.home.metadata.volunteers" />
-                  </div>
-                </div>
-                <div className="project-metadata-stat">
-                  <div className="project-metadata-stat__value">{456}</div>
-                  <div className="project-metadata-stat__label">
-                    <Translate content="project.home.metadata.classifications" />
-                  </div>
-                </div>
-                <div className="project-metadata-stat">
-                  <div className="project-metadata-stat__value">{789}</div>
-                  <div className="project-metadata-stat__label">
-                    <Translate content="project.home.metadata.subjects" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <OrganizationMetaData
+            displayName={this.props.organization.display_name}
+            projects={this.props.organizationProjects}
+          />
 
           <div className="organization-page__container">
             <div className="organization-details__content">

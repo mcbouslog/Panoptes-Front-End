@@ -51,10 +51,13 @@ export default {
       },
       viewToggle: 'View As Volunteer',
       introduction: 'Introduction',
+      metadata: {
+        projects: 'Projects'
+      },
       readMore: 'Read More',
       readLess: 'Read Less',
       links: 'Links'
-    },
+    }
   },
   tasks: {
     less: 'Less',
