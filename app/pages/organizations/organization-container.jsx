@@ -140,7 +140,7 @@ class OrganizationContainer extends React.Component {
                 organizationRoles,
                 organizationPages
               });
-              this.fetchProjects(organization, (isAdmin() || this.isCollaborator()));
+              this.fetchProjects(organization, (isAdmin() || this.isCollaborator()), this.props.location.query);
             })
             .catch((error) => {
               console.error(error); // eslint-disable-line no-console
@@ -164,10 +164,12 @@ class OrganizationContainer extends React.Component {
       const wrappedChildren = React.Children.map(children, child =>
         React.cloneElement(child, {
           organization,
+          category: (this.props.location && this.props.location.query && this.props.location.query.category),
           collaborator: (isAdmin() || this.isCollaborator()),
           collaboratorView: this.state.collaboratorView,
           errorFetchingProjects: this.state.errorFetchingProjects,
           fetchingProjects: this.state.fetchingProjects,
+          onChangeQuery: this.updateQuery,
           organizationAvatar: this.state.organizationAvatar,
           organizationBackground: this.state.organizationBackground,
           organizationPages: this.state.organizationPages,
