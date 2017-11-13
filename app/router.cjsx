@@ -167,6 +167,7 @@ module.exports =
     <Route path="organizations/:owner/:name" component={(require './pages/organizations/organization-container').default}>
       <IndexRoute component={(require './pages/organizations/organization-page').default} />
       <Route path="home" component={ONE_UP_REDIRECT} />
+      <Route path="stats" component={require './pages/organizations/stats'} />
     </Route>
 
     <Route path="notifications" component={NotificationsPage} />
