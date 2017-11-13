@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router';
 import classnames from 'classnames';
 import { Markdown } from 'markdownz';
 import Translate from 'react-translate-component';
@@ -50,7 +51,7 @@ OrganizationProjectCards.propTypes = {
   )
 };
 
-export const OrganizationMetaData = ({ displayName, projects }) => {
+export const OrganizationMetaData = ({ displayName, projects, slug }) => {
   function extractStat(statName) {
     return projects.reduce((accum, project) => accum + project[statName], 0);
   }
@@ -58,9 +59,9 @@ export const OrganizationMetaData = ({ displayName, projects }) => {
   return (
     <div className="organization-page__container">
       <div className="project-metadata">
-        <span className="organization-details__heading">
+        <Link className="organization-details__heading" to={`/organizations/${slug}/stats`}>
           {displayName}{' '}<Translate content="project.home.metadata.statistics" />
-        </span>
+        </Link>
         <div className="project-metadata-stats">
           <div className="project-metadata-stat">
             <div className="project-metadata-stat__value">{projects.length.toLocaleString()}</div>
@@ -98,7 +99,8 @@ OrganizationMetaData.propTypes = {
       id: React.PropTypes.string,
       display_name: React.PropTypes.string
     })
-  )
+  ),
+  slug: React.PropTypes.string
 };
 
 class OrganizationPage extends React.Component {
@@ -229,6 +231,7 @@ class OrganizationPage extends React.Component {
           <OrganizationMetaData
             displayName={this.props.organization.display_name}
             projects={this.props.organizationProjects}
+            slug={this.props.organization.slug}
           />
 
           <div className="organization-page__container">
@@ -320,6 +323,7 @@ OrganizationPage.propTypes = {
     display_name: React.PropTypes.string,
     id: React.PropTypes.string,
     introduction: React.PropTypes.string,
+    slug: React.PropTypes.string,
     urls: React.PropTypes.arrayOf(
       React.PropTypes.shape({
         url: React.PropTypes.string

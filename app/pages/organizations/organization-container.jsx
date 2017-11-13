@@ -157,21 +157,26 @@ class OrganizationContainer extends React.Component {
 
   render() {
     if (this.state.organization && (this.state.organization.listed || isAdmin() || this.isCollaborator())) {
-      return (
-        <OrganizationPage
-          category={this.props.location && this.props.location.query && this.props.location.query.category}
-          collaborator={isAdmin() || this.isCollaborator()}
-          collaboratorView={this.state.collaboratorView}
-          errorFetchingProjects={this.state.errorFetchingProjects}
-          fetchingProjects={this.state.fetchingProjects}
-          onChangeQuery={this.updateQuery}
-          organization={this.state.organization}
-          organizationAvatar={this.state.organizationAvatar}
-          organizationBackground={this.state.organizationBackground}
-          organizationPages={this.state.organizationPages}
-          organizationProjects={this.state.organizationProjects}
-          toggleCollaboratorView={this.toggleCollaboratorView}
-        />);
+      const children = this.props.children; // eslint-disable-line react/prop-types
+      const organization = this.state.organization;
+
+      // inject props into children
+      const wrappedChildren = React.Children.map(children, child =>
+        React.cloneElement(child, {
+          organization,
+          collaborator: (isAdmin() || this.isCollaborator()),
+          collaboratorView: this.state.collaboratorView,
+          errorFetchingProjects: this.state.errorFetchingProjects,
+          fetchingProjects: this.state.fetchingProjects,
+          organizationAvatar: this.state.organizationAvatar,
+          organizationBackground: this.state.organizationBackground,
+          organizationPages: this.state.organizationPages,
+          organizationProjects: this.state.organizationProjects,
+          toggleCollaboratorView: this.toggleCollaboratorView
+        }),
+      );
+
+      return (<div>{wrappedChildren}</div>);
     } else if (this.state.fetchingOrganization) {
       return (
         <div className="content-container">
