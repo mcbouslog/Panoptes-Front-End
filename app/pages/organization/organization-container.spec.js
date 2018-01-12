@@ -45,11 +45,17 @@ export const organization = {
   ]
 };
 
+function Page() {
+  return (
+    <p>Hello world!</p>
+  );
+}
+
 describe('OrganizationContainer', function () {
   let wrapper;
 
   beforeEach(function () {
-    wrapper = shallow(<OrganizationContainer params={params} />, { context: { router: {}}});
+    wrapper = shallow(<OrganizationContainer params={params}><Page /></OrganizationContainer>, { context: { router: {}}});
   });
 
   it('should render without crashing', function () {
@@ -58,7 +64,7 @@ describe('OrganizationContainer', function () {
   it('should initially render please wait message', function () {
     const message = <Translate content="organization.pleaseWait" />;
 
-    const orgPage = wrapper.find('OrganizationPage');
+    const orgPage = wrapper.find('Page');
 
     assert.equal(orgPage.length, 0);
     assert.equal(wrapper.contains(message), true);
@@ -68,7 +74,7 @@ describe('OrganizationContainer', function () {
     const message = <Translate content="organization.loading" />;
 
     wrapper.setState({ fetchingOrganization: true });
-    const orgPage = wrapper.find('OrganizationPage');
+    const orgPage = wrapper.find('Page');
 
     assert.equal(orgPage.length, 0);
     assert.equal(wrapper.contains(message), true);
@@ -78,31 +84,31 @@ describe('OrganizationContainer', function () {
     const message = <Translate content="organization.error" />;
 
     wrapper.setState({ error: { message: 'test error message' }});
-    const orgPage = wrapper.find('OrganizationPage');
+    const orgPage = wrapper.find('Page');
 
     assert.equal(orgPage.length, 0);
     assert.equal(wrapper.contains(message), true);
   });
 
   describe('with a succesfully fetched organization', function () {
-    it('should render OrganizationPage if organization is listed', function () {
+    it('should render Page if organization is listed', function () {
       const listedOrg = organization;
       listedOrg.listed = true;
 
       wrapper.setState({ organization: listedOrg });
-      const orgPage = wrapper.find('OrganizationPage');
+      const orgPage = wrapper.find('Page');
 
       assert.equal(orgPage.length, 1);
     });
 
-    it('should render OrganizationPage if organization not listed and user is collaborator', function () {
+    it('should render Page if organization not listed and user is collaborator', function () {
       const isCollabSpy = sinon.stub(OrganizationContainer.prototype, 'isCollaborator').returns(true);
 
       const unlistedOrg = organization;
       unlistedOrg.listed = false;
 
       wrapper.setState({ organization: unlistedOrg });
-      const orgPage = wrapper.find('OrganizationPage');
+      const orgPage = wrapper.find('Page');
 
       assert.equal(orgPage.length, 1);
 
@@ -115,7 +121,7 @@ describe('OrganizationContainer', function () {
       unlistedOrg.listed = false;
 
       wrapper.setState({ organization: unlistedOrg });
-      const orgPage = wrapper.find('OrganizationPage');
+      const orgPage = wrapper.find('Page');
 
       assert.equal(orgPage.length, 0);
       assert.equal(wrapper.contains(message), true);
