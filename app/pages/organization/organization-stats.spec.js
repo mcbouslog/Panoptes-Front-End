@@ -5,7 +5,7 @@ import React from 'react';
 import assert from 'assert';
 import { shallow } from 'enzyme';
 
-import OrganizationStatsController from './index';
+import OrganizationStatsController from './organization-stats';
 
 describe('OrganizationStatsController', function () {
   it('should render without crashing', function () {
