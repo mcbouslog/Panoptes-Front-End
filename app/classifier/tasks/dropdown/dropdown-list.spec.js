@@ -3,7 +3,7 @@
 
 import React from 'react';
 import assert from 'assert';
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import sinon from 'sinon';
 import DropdownList from './dropdown-list';
 import { workflow } from '../../../pages/dev-classifier/mock-data';
@@ -32,7 +32,7 @@ const multiSelects = workflow.tasks.dropdown;
 //   4 - City (condition:County, allowCreate:false)
 //   5 - Best State Team (condition:State, allowCreate:true)
 
-describe.only('DropdownList', function () {
+describe('DropdownList', function () {
   let wrapper;
   let onReorderSpy;
   let editDropdownSpy;
@@ -53,7 +53,7 @@ describe.only('DropdownList', function () {
   });
 
   it('should render without crashing', function () {
-    // beforeEach render of DropdownEditor
+    // beforeEach render of DropdownList
   });
 
   it('should render DragReorderable', function () {

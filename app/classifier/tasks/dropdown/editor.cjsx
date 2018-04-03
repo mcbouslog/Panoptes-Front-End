@@ -7,7 +7,7 @@ handleInputChange = require '../../../lib/handle-input-change'
 NextTaskSelector = require '../next-task-selector'
 {MarkdownEditor, MarkdownHelp} = require 'markdownz'
 
-DropdownList = require './dropdown-list'
+DropdownList = require('./dropdown-list').default
 DropdownDialog = require './dropdown-dialog'
 
 module.exports = createReactClass
