@@ -196,11 +196,11 @@ DropdownDialog = createReactClass
           <span>Dependent on {@state.conditionalSelects[@state.conditionalSelects.length - 1]?.title}</span>}
       </p>
 
-      <label className="pill-button" title={dropdownEditorHelp.required}>
-        Required <input type="checkbox" ref="required" checked={select.required} onChange={@editSelect}></input>
+      <label className="pill-button" htmlFor="required" title={dropdownEditorHelp.required}>
+        Required <input id="required" type="checkbox" ref="required" checked={select.required} onChange={@editSelect}></input>
       </label>{' '}
-      <label className="pill-button" title={dropdownEditorHelp.allowCreate}>
-        Allow Create <input type="checkbox" ref="allowCreate" checked={select.allowCreate} onChange={@editSelect}></input>
+      <label className="pill-button" htmlFor="allowCreate" title={dropdownEditorHelp.allowCreate}>
+        Allow Create <input id="allowCreate" type="checkbox" ref="allowCreate" checked={select.allowCreate} onChange={@editSelect}></input>
       </label>
       <br />
 
