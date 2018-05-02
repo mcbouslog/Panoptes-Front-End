@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import apiClient from 'panoptes-client/lib/api-client';
 
+// TODO get design input, button arbitrarily placed in featured project section for logged in, home-intro for logged out
+// TODO create new endpoint in backend to return 1 random project card (launch_approved, live)
+
 export default class RandomProject extends React.Component {
   constructor(props) {
     super(props);
