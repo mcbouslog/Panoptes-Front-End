@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router';
 import Thumbnail from '../../components/thumbnail';
+import RandomProject from './random-project';
 
 function FeaturedProject({ project }) {
   if (project) {
@@ -19,6 +20,8 @@ function FeaturedProject({ project }) {
         <h2 className="secondary-headline">{project.display_name}</h2>
         <p className="display-body">{project.description}</p>
         <Link to={`/projects/${project.slug}`}>View Project!</Link>
+        <br />
+        <RandomProject />
       </section>
     );
   }

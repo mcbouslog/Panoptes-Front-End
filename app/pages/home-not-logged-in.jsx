@@ -8,6 +8,7 @@ import apiClient from 'panoptes-client/lib/api-client';
 import LoginDialog from '../partials/login-dialog';
 import alert from '../lib/alert';
 import FeaturedProject from './home-common/featured-project';
+import RandomProject from './home-common/random-project';
 import HomePageSocial from './home-common/social';
 import HomePageDiscover from './home-not-logged-in/discover';
 import HomePageResearch from './home-not-logged-in/research';
@@ -124,6 +125,7 @@ export default class HomePage extends React.Component {
             <Link to="/projects" className="primary-button">
               <Translate content="notLoggedInHomePage.projects" />
             </Link>
+            <RandomProject />
           </section>
         </div>
 
