@@ -63,7 +63,7 @@ export class ProjectClassifyPage extends React.Component {
     this.loadingSelectedWorkflow = false;
     this.project = null;
     this.workflow = null;
-    
+
     this.state = {
       subject: null,
       classification: null,
@@ -357,6 +357,20 @@ export class ProjectClassifyPage extends React.Component {
   loadAnotherSubject() {
     // Forget the old classification so a new one will load.
     currentClassifications.forWorkflow[this.props.workflow.id] = null;
+
+    const roulette = localStorage.getItem('classify-roulette');
+
+    if (roulette === 'true') {
+      apiClient.type('projects')
+        .get({ cards: true, launch_approved: true, state: 'live', page_size: 100 })
+        .then((projects) => {
+          const filteredProjects = projects.filter(project => project.redirect === '');
+          const randomIndex = Math.floor(Math.random() * Math.floor(filteredProjects.length));
+          const slug = filteredProjects[randomIndex].slug;
+          this.context.router.push({ pathname: `/projects/${slug}/classify` });
+        })
+        .catch(error => console.info(error));
+    }
 
     if (this.props.workflow) {
       this.loadAppropriateClassification(this.props);
