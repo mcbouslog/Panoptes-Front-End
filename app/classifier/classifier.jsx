@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import styled, { ThemeProvider } from 'styled-components';
 import classNames from 'classnames';
+import superagent from 'superagent';
 
 import preloadSubject from '../lib/preload-subject';
 import workflowAllowsFlipbook from '../lib/workflow-allows-flipbook';
@@ -24,6 +25,7 @@ import TaskArea from './components/TaskArea';
 import TaskNav from './task-nav';
 import ClassificationSummary from './classification-summary';
 import MinicourseButton from './components/MinicourseButton';
+import openFeedbackCaesar from '../components/feedback-caesar';
 
 import SubjectViewer from '../components/subject-viewer';
 import FrameAnnotator from './frame-annotator';
@@ -120,7 +122,29 @@ class Classifier extends React.Component {
   }
 
   checkForFeedback(taskId) {
-    this.updateFeedback(taskId)
+    if (true) { // workflow.configuration.feedbackCaesar
+      const { subject, workflow } = this.props;
+      superagent
+        .get(`https://caesar-staging.zooniverse.org/workflows/${workflow.id}/subjects/${subject.id}/reductions`)
+        .set('Accept', 'application/json')
+        .set('Content-Type', 'application/json')
+        .set('Authorization', apiClient.headers.Authorization)
+        .query()
+        .then((response) => {
+          if (response.ok && response.body && response.body.length) {
+            const [reducer] = response.body.filter(red => red.reducer_key === 'fb_reducer_2');
+            console.log('reducer = ', reducer);
+            console.log('reducer.data = ', reducer.data);
+            return openFeedbackCaesar({ data: reducer.data });
+          } else {
+            console.warn('something something.');
+            return Promise.resolve();
+          }
+        })
+        .catch(() => console.warn('Failed to fetch Caesar data.'));
+    }
+
+    this.updateFeedback(taskId);
 
     const { feedback } = this.props;
     const taskFeedback = (feedback.rules && feedback.rules[taskId]) ? feedback.rules[taskId] : [];
